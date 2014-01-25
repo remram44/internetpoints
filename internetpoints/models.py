@@ -1,7 +1,8 @@
 from sqlalchemy import Column
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy.types import String, Integer
+from sqlalchemy.schema import ForeignKey
+from sqlalchemy.types import Integer, String, Text
 
 
 Base = declarative_base()
@@ -11,9 +12,9 @@ class Poster(Base):
     __tablename__ = 'posters'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    name = Column(String, nullable=False)
 
-    emails = relationship('PosterEmail', back_populates='poster')
+    emails = relationship('PosterEmail')
 
 
 class PosterEmail(Base):
@@ -21,7 +22,8 @@ class PosterEmail(Base):
 
     address = Column(String, primary_key=True)
 
-    poster = relationship('Poster', uselist=False, back_populates='emails')
+    poster_id = Column(Integer, ForeignKey('posters.id'), nullable=False)
+    poster = relationship('Poster', back_populates='emails')
 
 
 class Thread(Base):
@@ -36,5 +38,7 @@ class Message(Base):
     __tablename__ = 'messages'
 
     id = Column(String, primary_key=True)
+    text = Column(Text, nullable=False)
 
-    thread = relationship('Thread', back_populates='messages')
+    thread_id = Column(Integer, ForeignKey('threads.id'), nullable=False)
+    thread = relationship('Thread',  back_populates='messages')
