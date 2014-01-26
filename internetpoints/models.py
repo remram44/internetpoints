@@ -44,6 +44,8 @@ class Message(Base):
     id = Column(String, primary_key=True)
     subject = Column(Text, nullable=False)
     text = Column(Text, nullable=False)
+    # Date is UTC!
+    date = Column(DateTime, nullable=False)
 
     thread_id = Column(Integer, ForeignKey('threads.id'), nullable=False)
     thread = relationship('Thread',  back_populates='messages')

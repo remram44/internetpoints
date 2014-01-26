@@ -1,4 +1,6 @@
+from datetime import datetime
 from email.parser import Parser
+import email.utils
 import logging
 from poplib import POP3, POP3_SSL
 from sqlalchemy.orm.exc import NoResultFound
@@ -50,6 +52,9 @@ def main():
         replyto = msg['In-Reply-To']
         subject = msg['Subject']
         from_ = msg['From']
+        date = email.utils.parsedate_tz(msg['Date'])
+        if date:
+            date = datetime.fromtimestamp(email.utils.mktime_tz(date))
 
         logger.debug("Parsing message from %r" % (from_,))
 
@@ -116,7 +121,7 @@ def main():
             session.add(thread)
 
         # Insert message
-        message = models.Message(id=msgid, thread=thread,
+        message = models.Message(id=msgid, thread=thread, date=date,
                                  subject=subject, text=text)
         session.add(message)
         session.commit()
