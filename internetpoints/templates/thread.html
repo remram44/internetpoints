@@ -11,9 +11,15 @@
 <form action="{{ url_for('assign_task', thread_id=thread.id) }}" method="POST">
   <p>Assign task:
   <select name="task" required>
-    <option value="">Select one...</option>
+    <option value="">Select task...</option>
     {% for task in tasks %}
       <option value="{{ task.id }}">{{ task.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="poster" required>
+    <option value="">Select poster...</option>
+    {% for poster in posters %}
+      <option value="{{ poster.id }}">{{ poster.name }}</option>
     {% endfor %}
   </select>
   <input type="submit" value="Add" />

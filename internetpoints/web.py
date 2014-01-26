@@ -50,7 +50,14 @@ def thread(thread_id):
     thread = (session.query(models.Thread)
                      .filter(models.Thread.id == thread_id)).one()
     tasks = (session.query(models.Task)).all()
-    return render_template('thread.html', thread=thread, tasks=tasks)
+    # FIXME : This query can probably be improved
+    # It gets all the posters that posted in the thread
+    emails = (session.query(models.PosterEmail)
+                     .filter(models.PosterEmail.address.in_(
+                             [m.from_ for m in thread.messages]))).all()
+    posters = [e.poster for e in emails]
+    return render_template('thread.html',
+                           thread=thread, tasks=tasks, posters=posters)
 
 
 @app.route('/assign_task/<int:thread_id>', methods=['POST'])
@@ -62,12 +69,22 @@ def assign_task(thread_id):
                      .filter(models.Thread.id == thread_id)).one()
     task = (session.query(models.Task)
                      .filter(models.Task.id == request.form['task'])).one()
+    poster_req = (session.query(models.Poster)
+                         .filter(models.Poster.id == request.form['poster']))
+    poster = poster_req.one()
+    # Note that, although the Poster definitely exists, here we don't check
+    # that he took part in the thread
 
     try:
+        # Assign task
         task_assignation = models.TaskAssignation(
                 thread=thread,
-                task=task)
+                task=task,
+                poster=poster)
         session.add(task_assignation)
+        # Update Poster's score
+        poster_req.update({
+                models.Poster.score: models.Poster.score + task.reward})
         session.commit()
     except IntegrityError:
         pass

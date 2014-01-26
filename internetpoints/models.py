@@ -48,6 +48,7 @@ class Message(Base):
     __tablename__ = 'messages'
 
     id = Column(String, primary_key=True)
+    from_ = Column(String, nullable=False)
     subject = Column(Text, nullable=False)
     text = Column(Text, nullable=False)
     # Date is UTC!
@@ -77,3 +78,5 @@ class TaskAssignation(Base):
     thread = relationship('Thread', back_populates='task_assignations')
     task_id = Column(Integer, ForeignKey('tasks.id'), primary_key=True)
     task = relationship('Task', back_populates='assignations')
+    poster_id = Column(Integer, ForeignKey('posters.id'), nullable=False)
+    poster = relationship('Poster')

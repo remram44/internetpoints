@@ -51,7 +51,7 @@ def main():
         msgid = msg['Message-ID']
         replyto = msg['In-Reply-To']
         subject = msg['Subject']
-        from_ = msg['From']
+        from_ = email.utils.parseaddr(msg['From'])[1]
         date = email.utils.parsedate_tz(msg['Date'])
         if date:
             date = datetime.fromtimestamp(email.utils.mktime_tz(date))
@@ -128,6 +128,7 @@ def main():
 
         # Insert message
         message = models.Message(id=msgid, thread=thread, date=date,
+                                 from_=from_,
                                  subject=subject, text=text)
         session.add(message)
         session.commit()
