@@ -1,7 +1,7 @@
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm.session import sessionmaker
 
-from . import config, models
+from internetpoints import config, models
 
 
 # Setup SQLAlchemy

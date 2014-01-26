@@ -6,8 +6,8 @@ from poplib import POP3, POP3_SSL
 from sqlalchemy.orm.exc import NoResultFound
 import warnings
 
-from .. import config, models
-from ..storage import Session
+from internetpoints import config, models
+from internetpoints.storage import Session
 
 
 logger = logging.getLogger(__name__)

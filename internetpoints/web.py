@@ -1,8 +1,8 @@
 from flask import Flask, redirect, render_template, request, url_for
 from sqlalchemy.exc import IntegrityError
 
-from . import models
-from .storage import Session
+from internetpoints import config, models
+from internetpoints.storage import Session
 
 
 # Setup Flask
