@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>Assigned tasks:</p>
+<ul>
+  {% for task_assignation in thread.task_assignations %}
+    <li>{{ task_assignation.task.name }} (+{{ task_assignation.task.reward}}, {{task_assignation.date}})</li>
+  {% endfor %}
+</ul>
+
+<form action="{{ url_for('assign_task', thread_id=thread.id) }}" method="POST">
+  <p>Assign task:
+  <select name="task" required>
+    <option value="">Select one...</option>
+    {% for task in tasks %}
+      <option value="{{ task.id }}">{{ task.name }}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" value="Add" />
+  </p>
+</form>
+
+{% for msg in thread.messages %}
+  <h2>{{ msg.subject }}</h2>
+  <p>{{ msg.text }}</p>
+{% endfor %}
+{% endblock %}

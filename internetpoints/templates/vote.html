@@ -5,7 +5,7 @@
 <ul>
   {% for thread in threads %}
     <li>
-      <a href="#" style="color:
+      <a href="{{ url_for('thread', thread_id=thread.id) }}" style="color:
         {% if thread.assigned %}
           #AAAAAA
         {% else %}
