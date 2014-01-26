@@ -34,5 +34,8 @@ def vote():
 
     Shows the list of threads that require resolution.
     """
-    # TODO
-    return render_template('index.html')
+    session = Session()
+    threads = (session.query(models.Thread)
+                      .order_by(models.Thread.last_msg.desc())
+                      .limit(50)).all()
+    return render_template('vote.html', threads=threads)

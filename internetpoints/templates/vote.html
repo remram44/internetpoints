@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Recent threads:</h1>
+<ul>
+  {% for thread in threads %}
+    <li>
+      <a href="#" style="color:
+        {% if thread.assigned %}
+          #AAAAAA
+        {% else %}
+          black
+        {% endif %}
+      ;">
+        {% if thread.assigned %}
+          {{ thread.messages[0].subject }} (
+          {% for task_assignation in thread.task_assignations %}
+            {% if not loop.first %}
+            , 
+            {% endif %}
+            <span style="background-color: #BBFFBB;">{{ task_assignation.task.name }}</span>
+          {% endfor %}
+          )
+        {% else %}
+          {{ thread.messages[0].subject }}
+        {% endif %}
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}

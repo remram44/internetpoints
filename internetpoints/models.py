@@ -39,6 +39,10 @@ class Thread(Base):
     task_assignations = relationship('TaskAssignation',
                                      back_populates='thread')
 
+    @property
+    def assigned(self):
+        return bool(self.task_assignations)
+
 
 class Message(Base):
     __tablename__ = 'messages'
