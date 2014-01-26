@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Posters:</h1>
+<ul>
+{% for poster in posters %}
+  <li>{{ poster.name }} ({{ poster.score }})</li>
+{% endfor %}
+</ul>
+{% endblock %}

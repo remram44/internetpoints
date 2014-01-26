@@ -14,6 +14,7 @@ class Poster(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
+    score = Column(Integer, nullable=False, default=0)
 
     emails = relationship('PosterEmail')
 

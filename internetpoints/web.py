@@ -1,6 +1,7 @@
 from flask import Flask, redirect, render_template
 
-import storage
+from . import models
+from .storage import Session
 
 
 # Setup Flask
@@ -22,8 +23,10 @@ def scores():
 
     Display a list of contributors with their current number of points.
     """
-    # TODO
-    return render_template('index.html')
+    session = Session()
+    posters = (session.query(models.Poster)
+                      .order_by(models.Poster.score.desc())).all()
+    return render_template('scores.html', posters=posters)
 
 @app.route('/vote')
 def vote():
