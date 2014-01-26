@@ -1,4 +1,5 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, Response, url_for
+import functools
 from sqlalchemy.exc import IntegrityError
 
 from internetpoints import config, models
@@ -7,6 +8,27 @@ from internetpoints.storage import Session
 
 # Setup Flask
 app = Flask('internetpoints')
+
+
+def check_auth():
+    auth = request.authorization
+    return auth is not None and auth.password == config.PASSWORD
+
+
+def authenticate():
+    return Response("Please login to vote",
+                    401,
+                    {'WWW-Authenticate': 'Basic realm="internetpoints"'})
+
+
+def requires_auth(func):
+    @functools.wraps(func)
+    def decorated(*args, **kwargs):
+        if not check_auth():
+            return authenticate()
+        else:
+            return func(*args, **kwargs)
+    return decorated
 
 
 @app.route('/')
@@ -30,6 +52,7 @@ def scores():
     return render_template('scores.html', posters=posters)
 
 @app.route('/vote')
+@requires_auth
 def vote():
     """Main view.
 
@@ -43,6 +66,7 @@ def vote():
 
 
 @app.route('/thread/<int:thread_id>')
+@requires_auth
 def thread(thread_id):
     """Shows a thread and allows to vote on it.
     """
@@ -61,6 +85,7 @@ def thread(thread_id):
 
 
 @app.route('/assign_task/<int:thread_id>', methods=['POST'])
+@requires_auth
 def assign_task(thread_id):
     """Assign a new task to a thread.
     """
