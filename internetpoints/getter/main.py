@@ -116,6 +116,7 @@ def main():
             session.add(thread)
 
         # Insert message
-        message = models.Message(id=msgid, text=text, thread=thread)
+        message = models.Message(id=msgid, thread=thread,
+                                 subject=subject, text=text)
         session.add(message)
         session.commit()

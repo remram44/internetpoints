@@ -38,6 +38,7 @@ class Message(Base):
     __tablename__ = 'messages'
 
     id = Column(String, primary_key=True)
+    subject = Column(Text, nullable=False)
     text = Column(Text, nullable=False)
 
     thread_id = Column(Integer, ForeignKey('threads.id'), nullable=False)
