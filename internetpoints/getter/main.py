@@ -116,9 +116,15 @@ def main():
                 logger.debug("Message is part of existing thread %d" % (
                              thread.id,))
         if thread is None:
-            thread = models.Thread()
+            thread = models.Thread(last_msg=date)
             logger.debug("Creating new thread %d" % (thread.id,))
             session.add(thread)
+        else:
+            # FIXME : This should be synchronized somehow
+            # Update last_msg date field
+            if thread.last_msg < date:
+                thread.last_msg = date
+                session.add(thread)
 
         # Insert message
         message = models.Message(id=msgid, thread=thread, date=date,

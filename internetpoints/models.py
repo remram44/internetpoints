@@ -32,6 +32,8 @@ class Thread(Base):
     __tablename__ = 'threads'
 
     id = Column(Integer, primary_key=True)
+    # Date is UTC!
+    last_msg = Column(DateTime, nullable=False)
 
     messages = relationship('Message', back_populates='thread')
     task_assignations = relationship('TaskAssignation',
