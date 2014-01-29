@@ -69,7 +69,9 @@ def main():
             for part in msg.get_payload():
                 if part.get_content_type() == 'text/plain' or (
                         part.get_content_type() == 'text/html' and is_html):
-                    text = part.get_payload()
+                    charset = part.get_charsets()[0]
+                    text = part.get_payload(decode=True).decode(charset,
+                                                                'replace')
                     is_html = part.get_content_type() == 'text/html'
             if text is not None:
                 logger.debug("Found a text part (text/%s)" % (
@@ -82,7 +84,9 @@ def main():
                 if text:
                     logger.debug("Using preamble")
         else:
-            text = msg.get_payload()
+            charset = msg.get_charsets()[0]
+            text = msg.get_payload(decode=True).decode(charset,
+                                                        'replace')
             content_type = msg.get_content_type()
             is_html = content_type == 'text/html'
             logger.debug("Message is not multipart (%s)" % (content_type,))
