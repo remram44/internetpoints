@@ -1,4 +1,5 @@
 from datetime import datetime
+from email.header import decode_header
 from email.parser import Parser
 import email.utils
 import logging
@@ -34,6 +35,16 @@ def get_messages(host, use_ssl, port, user, password):
     server.quit()
 
 
+def decode_subject(subject):
+    res = []
+    for text, charset in decode_header(subject):
+        if charset:
+            res.append(text.decode(charset, 'replace'))
+        else:
+            res.append(text.decode('ascii', 'replace'))
+    return ' '.join(res)
+
+
 def main():
     logging.basicConfig(level=logging.INFO)
 
@@ -51,7 +62,7 @@ def main():
         # Headers of interest
         msgid = msg['Message-ID']
         replyto = msg['In-Reply-To']
-        subject = msg['Subject']
+        subject = decode_subject(msg['Subject'])
         from_ = email.utils.parseaddr(msg['From'])[1]
         date = email.utils.parsedate_tz(msg['Date'])
         if date:
