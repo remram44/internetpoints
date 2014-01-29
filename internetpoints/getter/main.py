@@ -3,6 +3,7 @@ from email.parser import Parser
 import email.utils
 import logging
 from poplib import POP3, POP3_SSL
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 import warnings
 
@@ -117,9 +118,10 @@ def main():
                              thread.id,))
         if thread is None:
             thread = models.Thread(last_msg=date)
-            logger.debug("Creating new thread %d" % (thread.id,))
+            thread_created = True
             session.add(thread)
         else:
+            thread_created = False
             # FIXME : This should be synchronized somehow
             # Update last_msg date field
             if thread.last_msg < date:
@@ -132,3 +134,6 @@ def main():
                                  subject=subject, text=text)
         session.add(message)
         session.commit()
+
+        if thread_created:
+            logger.debug("Created new thread %d" % (thread.id,))
