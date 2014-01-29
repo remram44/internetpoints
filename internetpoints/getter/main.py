@@ -133,7 +133,11 @@ def main():
                                  from_=from_,
                                  subject=subject, text=text)
         session.add(message)
-        session.commit()
-
-        if thread_created:
-            logger.debug("Created new thread %d" % (thread.id,))
+        try:
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            logger.info("Got IntegrityError inserting message, skipping")
+        else:
+            if thread_created:
+                logger.debug("Created new thread %d" % (thread.id,))
