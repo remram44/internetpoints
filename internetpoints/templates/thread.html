@@ -28,6 +28,6 @@
 
 {% for msg in thread.messages %}
   <h2>{{ msg.subject }}</h2>
-  <p>{{ msg.text }}</p>
+  <pre>{{ msg.text }}</pre>
 {% endfor %}
 {% endblock %}
