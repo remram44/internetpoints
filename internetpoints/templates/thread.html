@@ -28,6 +28,11 @@
 
 {% for msg in thread.messages %}
   <h2>{{ msg.subject }}</h2>
+  {% if msg.poster_email %}
+    <p class="known-poster">{{ msg.poster_email.poster.name }} ({{ msg.from_ }}) {{ msg.poster_email.poster.score }}</p>
+  {% else %}
+    <p class="unknown-poster" style="font-style: oblique;">{{ msg.from_ }}</p>
+  {% endif %}
   <pre>{{ msg.text }}</pre>
 {% endfor %}
 {% endblock %}

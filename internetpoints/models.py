@@ -56,6 +56,10 @@ class Message(Base):
 
     thread_id = Column(Integer, ForeignKey('threads.id'), nullable=False)
     thread = relationship('Thread',  back_populates='messages')
+    poster_email = relationship('PosterEmail',
+                                primaryjoin=from_ == PosterEmail.address,
+                                foreign_keys=from_,
+                                remote_side=PosterEmail.address)
 
 
 class Task(Base):
