@@ -84,12 +84,9 @@ def thread(thread_id):
                          joinedload(models.Thread.task_assignations))
                      .filter(models.Thread.id == thread_id)).one()
     tasks = (session.query(models.Task)).all()
-    # FIXME : This query can probably be improved
-    # It gets all the posters that posted in the thread
-    emails = (session.query(models.PosterEmail)
-                     .filter(models.PosterEmail.address.in_(
-                             [m.from_ for m in thread.messages]))).all()
-    posters = [e.poster for e in emails]
+    posters = set(msg.poster_email.poster
+                  for msg in thread.messages
+                  if msg.poster_email is not None)
     return render_template('thread.html',
                            thread=thread, tasks=tasks, posters=posters)
 
