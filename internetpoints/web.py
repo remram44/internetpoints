@@ -1,6 +1,7 @@
 from flask import Flask, redirect, render_template, request, Response, url_for
 import functools
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import joinedload
 
 from internetpoints import config, models
 from internetpoints.storage import Session
@@ -60,6 +61,10 @@ def vote():
     """
     session = Session()
     threads = (session.query(models.Thread)
+                      .options(
+                          joinedload(models.Thread.task_assignations)
+                              .joinedload(models.TaskAssignation.task),
+                          joinedload(models.Thread.messages))
                       .order_by(models.Thread.last_msg.desc())
                       .limit(50)).all()
     return render_template('vote.html', threads=threads)
@@ -72,6 +77,11 @@ def thread(thread_id):
     """
     session = Session()
     thread = (session.query(models.Thread)
+                     .options(
+                         joinedload(models.Thread.messages)
+                             .joinedload(models.Message.poster_email)
+                             .joinedload(models.PosterEmail.poster),
+                         joinedload(models.Thread.task_assignations))
                      .filter(models.Thread.id == thread_id)).one()
     tasks = (session.query(models.Task)).all()
     # FIXME : This query can probably be improved
