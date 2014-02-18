@@ -4,7 +4,7 @@
 <p>Assigned tasks:</p>
 <ul>
   {% for task_assignation in thread.task_assignations %}
-    <li>{{ task_assignation.task.name }} (+{{ task_assignation.task.reward}}, {{task_assignation.date}})</li>
+    <li>{{ task_assignation.poster.name }} ({{ task_assignation.poster.score }}) {{ task_assignation.task.name }} (+{{ task_assignation.task.reward}}, {{task_assignation.date}})</li>
   {% endfor %}
 </ul>
 
