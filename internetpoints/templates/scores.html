@@ -4,7 +4,7 @@
 <h1>Posters:</h1>
 <ul>
 {% for poster in posters %}
-  <li>{{ poster.name }} ({{ poster.score }})</li>
+  <li><a href="{{ url_for('edit_poster', poster_id=poster.id) }}">{{ poster.name }} ({{ poster.score }})</a></li>
 {% endfor %}
 </ul>
 {% endblock %}
