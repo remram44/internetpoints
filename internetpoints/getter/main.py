@@ -118,13 +118,13 @@ def main():
             is_html = False
 
         # Find thread this message is a part of
-        session = Session()
+        sqlsession = Session()
         thread = None
         if replyto:
             try:
-                parent_msg = (session.query(models.Message)
-                                     .filter(models.Message.id == replyto)
-                                     .one())
+                parent_msg = (sqlsession.query(models.Message)
+                                        .filter(models.Message.id == replyto)
+                                        .one())
             except NoResultFound:
                 pass
             else:
@@ -134,24 +134,24 @@ def main():
         if thread is None:
             thread = models.Thread(last_msg=date)
             thread_created = True
-            session.add(thread)
+            sqlsession.add(thread)
         else:
             thread_created = False
             # FIXME : This should be synchronized somehow
             # Update last_msg date field
             if thread.last_msg < date:
                 thread.last_msg = date
-                session.add(thread)
+                sqlsession.add(thread)
 
         # Insert message
         message = models.Message(id=msgid, thread=thread, date=date,
                                  from_=from_,
                                  subject=subject, text=text)
-        session.add(message)
+        sqlsession.add(message)
         try:
-            session.commit()
+            sqlsession.commit()
         except IntegrityError:
-            session.rollback()
+            sqlsession.rollback()
             logger.info("Got IntegrityError inserting message, skipping")
         else:
             if thread_created:
