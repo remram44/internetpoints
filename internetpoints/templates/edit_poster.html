@@ -9,7 +9,7 @@
 {% endif %}
 
 <form action="{{ url_for('edit_poster', poster_id=poster.id) }}" method="POST">
-  <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}" />
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
   <table>
     <tr>
       <td>Name:</td>
@@ -17,22 +17,33 @@
         <input type="text" name="name" value="{{ poster.name }}" />
       </td>
     </tr>
-    {% for poster_email in poster.emails %}
-      <tr>
-        <td>Email:</td>
-        <td>
-          {{ poster_email.address }}
-          <a href="{{ url_for('edit_poster', poster_id=poster.id, remove_email=poster_email.address) }}">(remove)</a>
-        </td>
-      </tr>
-    {% endfor %}
-    <tr>
-      <td>Add email:</td>
-      <td>
-        <input type="text" name="add_email" value="" />
-      </td>
-    </tr>
   </table>
   <input type="submit" value="Save" />
 </form>
+
+<table>
+  {% for poster_email in poster.emails %}
+    <tr>
+      <td>Email:</td>
+      <td>
+        {{ poster_email.address }}
+        <form action="{{ url_for('edit_poster', poster_id=poster.id) }}" method="POST">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="remove_email" value="{{ poster_email.address }}" />
+          <input type="submit" value="remove" />
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  <tr>
+    <td>Add email:</td>
+    <td>
+      <form action="{{ url_for('edit_poster', poster_id=poster.id) }}" method="POST">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+        <input type="text" name="add_email" value="" />
+        <input type="submit" value="Add" />
+      </form>
+    </td>
+  </tr>
+</table>
 {% endblock %}

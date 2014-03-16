@@ -159,7 +159,7 @@ def assign_task(thread_id):
         sqlsession.commit()
     except IntegrityError:
         pass
-    return redirect(url_for('thread', thread_id=thread_id))
+    return redirect(url_for('thread', thread_id=thread_id), 303)
 
 
 @app.route('/add_email', methods=['POST'])
@@ -191,7 +191,7 @@ def add_email():
         sqlsession.add(new_email)
         sqlsession.commit()
         return redirect(url_for('edit_poster', poster_id=new_poster.id,
-                                msg='Poster created'))
+                                msg='Poster created'), 303)
     elif 'name' not in request.form and 'poster_id' in request.form:
         poster_id = int(request.form['poster_id'])
         poster = (sqlsession.query(models.Poster)
@@ -199,7 +199,7 @@ def add_email():
         new_email = models.PosterEmail(address=email, poster=poster)
         sqlsession.add(new_email)
         sqlsession.commit()
-        return redirect(url_for('edit_poster', poster_id=poster.id))
+        return redirect(url_for('edit_poster', poster_id=poster.id), 303)
     # If both are set, something is going on, just display the forms again
 
     # Renders the form that will allow to choose an existing Poster or to
@@ -220,31 +220,27 @@ def edit_poster(poster_id):
                             joinedload(models.Poster.emails))
                         .filter(models.Poster.id == poster_id)).one()
 
-    def get_args(key):
-        return request.args.getlist(key) + request.form.getlist(key)
+    if request.method == 'POST':
+        changed = False
+        if 'remove_email' in request.form:
+            email = request.form['remove_email']
+            (sqlsession.query(models.PosterEmail)
+                       .filter(models.PosterEmail.poster_id == poster_id)
+                       .filter(models.PosterEmail.address == email)).delete()
+            changed = True
+        if 'add_email' in request.form:
+            email = request.form['add_email']
+            new_email = models.PosterEmail(address=email, poster=poster)
+            sqlsession.add(new_email)
+            changed = True
+        if 'name' in request.form:
+            poster.name = request.form['name']
+            sqlsession.add(poster)
+            changed = True
 
-    changed = False
-    for email in get_args('remove_email'):
-        (sqlsession.query(models.PosterEmail)
-                   .filter(models.PosterEmail.poster_id == poster_id)
-                   .filter(models.PosterEmail.address == email)).delete()
-        changed = True
-    for email in get_args('add_email'):
-        if not email:
-            continue
-        new_email = models.PosterEmail(address=email, poster=poster)
-        sqlsession.add(new_email)
-        changed = True
-    name = get_args('name')
-    if name:
-        name = name[0]
-        poster.name = name
-        sqlsession.add(poster)
-        changed = True
-
-    if changed:
-        sqlsession.commit()
-        return redirect(url_for('edit_poster', poster_id=poster_id))
+        if changed:
+            sqlsession.commit()
+        return redirect(url_for('edit_poster', poster_id=poster_id), 303)
 
     return render_template('edit_poster.html', poster=poster,
                            msg=request.form.get('msg'),
