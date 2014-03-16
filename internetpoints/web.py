@@ -10,6 +10,7 @@ from internetpoints.storage import Session
 
 # Setup Flask
 app = Flask('internetpoints')
+app.config.update(config.__dict__)
 
 
 def check_auth():

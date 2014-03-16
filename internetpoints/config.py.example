@@ -2,3 +2,5 @@ DATABASE_URI = 'sqlite:///database.sqlite3'
 INBOX = ('host', True if ssl else False, port,
          'username', 'password')
 PASSWORD = 'basic-auth voting password'
+SECRET_KEY = ('AEEuBD6hrqSGZYXYnUCanDl7AXN8pAdQmbn2TjrT'
+              'jb7DtVAzM8PIbtb1w3jvjixmOKe3vqiocDpjH7Hz')
