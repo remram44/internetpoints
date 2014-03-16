@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>Registering email: {{ email }}</p>
+
+<form action="{{ url_for('add_email') }}" method="POST">
+  <input type="hidden" name="email" value="{{ email }}" />
+  <p>Add this email to an existing poster:
+  <select name="poster_id">
+    <option value="">Select a poster name...</option>
+    {% for poster in posters %}
+      <option value="{{ poster.id }}">{{ poster.name }}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" value="Add to poster" />
+  </p>
+</form>
+
+<form action="{{ url_for('add_email') }}" method="POST">
+  <input type="hidden" name="email" value="{{ email }}" />
+  <p>Create a new poster with this email and name:
+  <input type="text" name="name" value="" />
+  <input type="submit" value="Create new poster" />
+  </p>
+</form>
+{% endblock %}

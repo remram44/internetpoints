@@ -25,6 +25,19 @@
   <input type="submit" value="Add" />
   </p>
 </form>
+{% if registerable_senders %}
+  <form action="{{ url_for('add_email') }}" method="POST">
+    <p>Register unknown poster:
+    <select name="email" required>
+      <option value="">Select an address...</option>
+      {% for email in registerable_senders %}
+        <option value="{{ email }}">{{ email }}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Register" />
+    </p>
+  </form>
+{% endif %}
 
 {% for msg in thread.messages %}
   <h2>{{ msg.subject }}</h2>
