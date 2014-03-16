@@ -1,8 +1,12 @@
 from flask import Flask, redirect, render_template, request, Response, url_for
+from flask.globals import session
 import functools
+import random
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
+import string
+from werkzeug import abort
 
 from internetpoints import config, models
 from internetpoints.storage import Session
@@ -12,6 +16,33 @@ from internetpoints.storage import Session
 app = Flask('internetpoints')
 app.config.update(config.__dict__)
 
+
+# CSRF protection
+
+def random_string(size=20, characters=string.ascii_uppercase +
+                                      string.ascii_lowercase +
+                                      string.digits):
+    return ''.join(random.choice(characters) for i in xrange(size))
+
+
+@app.before_request
+def csrf_protect():
+    if request.method == "POST":
+        token = session.pop('_csrf_token', None)
+        if not token or token != request.form.get('_csrf_token'):
+            abort(400)
+
+
+def generate_csrf_token():
+    if '_csrf_token' not in session:
+        session['_csrf_token'] = random_string()
+    return session['_csrf_token']
+
+
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
+
+
+# Authentication
 
 def check_auth():
     auth = request.authorization

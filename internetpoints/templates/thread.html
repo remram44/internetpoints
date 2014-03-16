@@ -9,6 +9,7 @@
 </ul>
 
 <form action="{{ url_for('assign_task', thread_id=thread.id) }}" method="POST">
+  <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}" />
   <p>Assign task:
   <select name="task" required>
     <option value="">Select task...</option>
@@ -27,6 +28,7 @@
 </form>
 {% if registerable_senders %}
   <form action="{{ url_for('add_email') }}" method="POST">
+    <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}" />
     <p>Register unknown poster:
     <select name="email" required>
       <option value="">Select an address...</option>
