@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if msg %}
+  <p>{{ msg }}</p>
+{% endif %}
+{% if error %}
+  <p>{{ error }}</p>
+{% endif %}
+
+<form action="{{ url_for('edit_poster', poster_id=poster.id) }}" method="POST">
+  <table>
+    <tr>
+      <td>Name:</td>
+      <td>
+        <input type="text" name="name" value="{{ poster.name }}" />
+      </td>
+    </tr>
+    {% for poster_email in poster.emails %}
+      <tr>
+        <td>Email:</td>
+        <td>
+          {{ poster_email.address }}
+          <a href="{{ url_for('edit_poster', poster_id=poster.id, remove_email=poster_email.address) }}">(remove)</a>
+        </td>
+      </tr>
+    {% endfor %}
+    <tr>
+      <td>Add email:</td>
+      <td>
+        <input type="text" name="add_email" value="" />
+      </td>
+    </tr>
+  </table>
+  <input type="submit" value="Save" />
+</form>
+{% endblock %}

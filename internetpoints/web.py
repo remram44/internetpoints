@@ -178,7 +178,42 @@ def add_email():
                            posters=all_posters)
 
 
-@app.route('/edit_poster/<int:poster_id>')
+@app.route('/edit_poster/<int:poster_id>', methods=['GET', 'POST'])
 @requires_auth
 def edit_poster(poster_id):
-    return Response("TODO", content_type='text/plain')
+    session = Session()
+    # Look up Poster
+    poster = (session.query(models.Poster)
+                     .options(
+                         joinedload(models.Poster.emails))
+                     .filter(models.Poster.id == poster_id)).one()
+
+    def get_args(key):
+        return request.args.getlist(key) + request.form.getlist(key)
+
+    changed = False
+    for email in get_args('remove_email'):
+        (session.query(models.PosterEmail)
+                .filter(models.PosterEmail.poster_id == poster_id)
+                .filter(models.PosterEmail.address == email)).delete()
+        changed = True
+    for email in get_args('add_email'):
+        if not email:
+            continue
+        new_email = models.PosterEmail(address=email, poster=poster)
+        session.add(new_email)
+        changed = True
+    name = get_args('name')
+    if name:
+        name = name[0]
+        poster.name = name
+        session.add(poster)
+        changed = True
+
+    if changed:
+        session.commit()
+        return redirect(url_for('edit_poster', poster_id=poster_id))
+
+    return render_template('edit_poster.html', poster=poster,
+                           msg=request.form.get('msg'),
+                           error=request.form.get('error'))
