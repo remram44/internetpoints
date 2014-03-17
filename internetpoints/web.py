@@ -98,8 +98,7 @@ def vote():
                              joinedload(models.Thread.task_assignations)
                                  .joinedload(models.TaskAssignation.task),
                              joinedload(models.Thread.messages))
-                         .order_by(models.Thread.last_msg.desc())
-                         .limit(50)).all()
+                         .order_by(models.Thread.last_msg.desc())).all()
     return render_template('vote.html', threads=threads)
 
 
